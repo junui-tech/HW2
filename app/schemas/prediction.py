@@ -7,3 +7,4 @@ class SentimentResponse(BaseModel):
     text: str
     polarity: float
     sentiment: str
+    subjectivity: float

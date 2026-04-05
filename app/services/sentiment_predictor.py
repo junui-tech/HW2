@@ -14,6 +14,7 @@ class SentimentPredictor:
         """
         blob = TextBlob(text)
         polarity = blob.sentiment.polarity
+        subjectivity = blob.sentiment.subjectivity
         
         if polarity > self.neutral_threshold:
             sentiment = "positive"
@@ -25,7 +26,8 @@ class SentimentPredictor:
         return {
             "text": text,
             "polarity": polarity,
-            "sentiment": sentiment
+            "sentiment": sentiment,
+            "subjectivity": subjectivity
         }
 
 # Instantiate a single predictor to be reused across requests (useful for caching/heavy models)
