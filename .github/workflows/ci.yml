@@ -52,7 +52,7 @@ jobs:
     
     steps:
       - name: Pull latest image from Docker Hub
-        run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/sentiment-api:latest
+        run: docker pull --platform linux/amd64 ${{ secrets.DOCKERHUB_USERNAME }}/sentiment-api:latest
 
       - name: Stop and remove existing container (if running)
         run: |
@@ -63,4 +63,4 @@ jobs:
       - name: Run new container
         run: |
           # 8000번 포트로 백그라운드(-d)에서 API를 띄웁니다!
-          docker run -d --name sentiment-api -p 8000:8000 ${{ secrets.DOCKERHUB_USERNAME }}/sentiment-api:latest
+          docker run --platform linux/amd64 -d --name sentiment-api -p 8000:8000 ${{ secrets.DOCKERHUB_USERNAME }}/sentiment-api:latest
