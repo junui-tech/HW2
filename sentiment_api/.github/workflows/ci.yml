@@ -1,0 +1,43 @@
+name: CI/CD Pipeline - Build and Push to Docker Hub
+
+# 트리거 조건: main 또는 master 브랜치에 코드가 push 되었을 때
+on:
+  push:
+    branches:
+      - main
+      - master
+
+# GitHub Actions 작업 정의
+jobs:
+  build-push-docker:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+    
+    steps:
+      # 1. 저장소 코드 체크아웃
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 2. Docker 빌드를 위한 환경 셋업 (Buildx 캐싱 등의 최적화 지원)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 3. Docker Hub 로그인 (주의: Repo Settings -> Secrets에 아래 변수들을 등록해야 함)
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }} # 비밀번호 대신 Access Token 사용 권장
+
+      # 4. 이미지 빌드 및 푸시
+      - name: Build and Push
+        uses: docker/build-push-action@v5
+        with:
+          # Dockerfile이 있는 현재 위치 기준
+          context: .
+          push: true
+          # 저장할 태그명 명시
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/sentiment-api:latest
+          # 빌드 속도를 높이기 위한 Docker Buildx 캐시 설정
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/sentiment-api:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/sentiment-api:buildcache,mode=max
