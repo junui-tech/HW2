@@ -10,11 +10,16 @@ class SentimentPredictor:
 
     def predict(self, text: str) -> dict:
         """
-        Perform inference on the input text.
+        Perform inference on the input text after autocorrecting typos.
         """
-        blob = TextBlob(text)
-        polarity = blob.sentiment.polarity
-        subjectivity = blob.sentiment.subjectivity
+        # 1. 문장 교정 (Autocorrect)
+        original_blob = TextBlob(text)
+        corrected_blob = original_blob.correct()
+        corrected_text = str(corrected_blob)
+        
+        # 2. 교정된 문장 기준으로 감성 분석 진행
+        polarity = corrected_blob.sentiment.polarity
+        subjectivity = corrected_blob.sentiment.subjectivity
         
         if polarity > self.neutral_threshold:
             sentiment = "positive"
@@ -25,6 +30,7 @@ class SentimentPredictor:
             
         return {
             "text": text,
+            "corrected_text": corrected_text,
             "polarity": polarity,
             "sentiment": sentiment,
             "subjectivity": subjectivity
