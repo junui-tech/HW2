@@ -97,6 +97,27 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        .corrected-container {
+            margin-top: 1.5rem;
+            display: none;
+            background: rgba(15, 23, 42, 0.4);
+            padding: 1rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--accent);
+            text-align: left;
+            animation: slideUp 0.5s ease forwards;
+        }
+        .corrected-label {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+        .corrected-text {
+            color: #e2e8f0;
+            font-style: italic;
+        }
         .metric {
             background: rgba(15, 23, 42, 0.6);
             padding: 1.5rem 1rem;
@@ -128,6 +149,11 @@
         
         <textarea id="textInput" placeholder="I absolutely love the new features! They are incredibly fast, but some UI elements are confusing..."></textarea>
         <button onclick="analyzeText()" id="analyzeBtn">Analyze Text</button>
+
+        <div class="corrected-container" id="correctedBlock">
+            <span class="corrected-label">✨ AI 교정 문장:</span>
+            <span class="corrected-text" id="resCorrectedText"></span>
+        </div>
 
         <div class="results" id="resultsBlock">
             <div class="metric">
@@ -165,6 +191,15 @@
                 const data = await response.json();
                 
                 document.getElementById('resultsBlock').style.display = 'grid';
+                
+                // Show corrected text gracefully
+                const correctedBlock = document.getElementById('correctedBlock');
+                if (data.corrected_text && data.corrected_text !== text) {
+                    correctedBlock.style.display = 'block';
+                    document.getElementById('resCorrectedText').textContent = data.corrected_text;
+                } else {
+                    correctedBlock.style.display = 'none';
+                }
                 
                 const sentEl = document.getElementById('resSentiment');
                 sentEl.textContent = data.sentiment.charAt(0).toUpperCase() + data.sentiment.slice(1);
